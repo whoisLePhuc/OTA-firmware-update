@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "devicestate.h": "c",
+        "unistd.h": "c",
+        "unpluggedstate.h": "c",
+        "mountingstate.h": "c",
+        "usbaccesscontrolmanager.h": "c",
+        "mountfailedstate.h": "c",
+        "stdlib.h": "c",
+        "stdio.h": "c",
+        "string.h": "c"
+    }
+}
