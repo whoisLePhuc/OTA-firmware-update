@@ -5,10 +5,12 @@
 #include "FiniteStateMachine/CertifyingState.h"
 #include "FiniteStateMachine/DenyState.h"
 #include "FiniteStateMachine/USBAccessControlManager.h"
+#include "FiniteStateMachine/MountingState.h"
 #include "USBAccessControlComponent/AccessControlListVerifier.h"
+#include "USBAccessControlComponent/USBGuardInterface.h"
 #include "EventManager/EventManager.h"
 
-#define EVENTS_FILE "/home/lephuc/OTA-firmware-update/csv_file/ConnectDevice.csv"
+
 #define WHITELIST_FILE "/home/lephuc/OTA-firmware-update/csv_file/whitelist.csv"
 
 static void onPlugin(USBAccessState *state) {
@@ -30,17 +32,22 @@ static void onDenyAccess(USBAccessState *state){
     state->manager->setState(state->manager, denyStateCreate());
 }
 
+static void onAllowAccessNonStorage(USBAccessState *state){
+    printf("PLUGGED: Nhan ALLOW_ACCESS_NON_STORAGE. Chuyen sang ALLOW_ACCESS_NON_STORAGE.\n");
+    state->manager->setState(state->manager, mountingStateCreate());
+}
+
 static void setContext(USBAccessState *state, struct USBAccessControlManager *manager){
     state->manager = manager;
 
-    if (check_whitelist(EVENTS_FILE, WHITELIST_FILE)) {
-        printf(">> Device is in WHITELIST ✅\n");
-        currentEvent = EVENT_TYPE_ALLOW_ACCESS_STORAGE; // Cập nhật sự kiện cho phép truy cập lưu trữ
+    // Các function được thực hiện khi ở trạng thái PLUGGED
+    // Kiểm tra thiết bị có phải là thiết bị lưu trữ hay không
+    if (usbguardStorageDeviceCheck(&usbInfo)) {
+        currentEvent = EVENT_TYPE_ALLOW_ACCESS_STORAGE;
     } else {
-        printf(">> Device is NOT in whitelist ❌\n");
-        currentEvent = EVENT_TYPE_DENY_ACCESS; // Cập nhật sự kiện từ chối truy cập
+        currentEvent = EVENT_TYPE_ALLOW_ACCESS_NON_STORAGE;
     }
-
+    
 }
 
 USBAccessState* pluggedStateCreate(){
@@ -53,7 +60,7 @@ USBAccessState* pluggedStateCreate(){
     pluggedState->onCertVerified = NULL;
     pluggedState->onMountSuccess = NULL;
     pluggedState->onMountFailed = NULL;
-    pluggedState->onAllowAccessNonStorage = NULL;
+    pluggedState->onAllowAccessNonStorage = onAllowAccessNonStorage;
     pluggedState->setContext = setContext;
     pluggedState->manager = NULL;
     return pluggedState;

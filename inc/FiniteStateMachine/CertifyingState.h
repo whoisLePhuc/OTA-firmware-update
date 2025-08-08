@@ -5,4 +5,6 @@
 
 USBAccessState* certifyingStateCreate();
 
+void testCertifyingState();
+
 #endif

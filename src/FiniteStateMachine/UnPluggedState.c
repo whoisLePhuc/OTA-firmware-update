@@ -15,6 +15,7 @@ static void onPlugout(USBAccessState *state){
 }
 
 static void setContext(USBAccessState *state, struct USBAccessControlManager *manager){
+    currentEvent = EVENT_TYPE_NONE; // Reset event khi chuyển trạng thái
     state->manager = manager;
 }
 

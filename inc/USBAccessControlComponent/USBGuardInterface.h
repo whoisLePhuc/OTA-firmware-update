@@ -25,12 +25,18 @@ typedef struct {
 } UsbDeviceInfo;
 
 // API khởi tạo kết nối DBus
-DBusConnection* usbguard_init_connection(void);
+DBusConnection* usbguardInitConnection(void);
 
 // API lắng nghe sự kiện USB và lưu vào struct
-int usbguard_listen_event(DBusConnection* conn, UsbDeviceInfo* info);
+int usbguardListenEvent(DBusConnection* conn, UsbDeviceInfo* info);
 
 // API in thông tin USB ra console
-void usbguard_print_info(const UsbDeviceInfo* info);
+void usbguardPrintInfo(const UsbDeviceInfo* info);
+
+// Hàm kiểm tra thiết bị storage
+int usbguardStorageDeviceCheck(const UsbDeviceInfo* info);
+
+// Biến toàn cầu để lưu trữ thông tin của USB
+extern UsbDeviceInfo usbInfo;
 
 #endif

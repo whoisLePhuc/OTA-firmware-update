@@ -4,12 +4,6 @@
 #include "FiniteStateMachine/UnPluggedState.h"
 #include "EventManager/EventManager.h"
 
-USBAccessControlManager *device = NULL;
-
-void initUSBManager(void) {
-    device = USBAccessControlManagerCreate(unpluggedStateCreate());
-}
-
 static void setState(USBAccessControlManager *manager, USBAccessState *newState){
     USBAccessState *oldState = manager->currentState;
     manager->currentState = newState;

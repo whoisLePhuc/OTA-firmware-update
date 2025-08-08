@@ -8,6 +8,8 @@
         "mountfailedstate.h": "c",
         "stdlib.h": "c",
         "stdio.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "usbguardinterface.h": "c",
+        "accesscontrollistverifier.h": "c"
     }
 }

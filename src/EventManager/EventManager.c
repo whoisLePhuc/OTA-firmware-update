@@ -5,13 +5,11 @@
 #include "FiniteStateMachine/USBAccessControlManager.h"
 #include "USBAccessControlComponent/UdevListener.h"
 
-
 EventType currentEvent = EVENT_TYPE_NONE;  // định nghĩa khởi tạo biến toàn cục
 
-void handleEvent(EventType event){
+void handleEvent(EventType event, USBAccessControlManager *device) {
     switch (event){
         case EVENT_TYPE_NONE:
-
             break;
         case EVENT_TYPE_PLUGIN:
             device->pluginEvent(device);

@@ -1,6 +1,8 @@
 #ifndef EVENT_MANAGE_H
 #define EVENT_MANAGE_H
 
+#include "FiniteStateMachine/USBAccessControlManager.h"
+
 typedef enum {
     EVENT_TYPE_NONE,
     EVENT_TYPE_PLUGIN,
@@ -18,6 +20,6 @@ typedef enum {
 
 extern EventType currentEvent;   // khai báo biến toàn cục
 
-void handleEvent(EventType event);
+void handleEvent(EventType event, USBAccessControlManager *device);
 
 #endif

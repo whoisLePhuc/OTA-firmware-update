@@ -28,8 +28,10 @@ static void onCertVerified(USBAccessState *state){
 }
 
 static void setContext(USBAccessState *state, struct USBAccessControlManager *manager){
-    testCertifyingState();
     state->manager = manager;
+
+    // Các hàm được thực hiện trong trạng thái CERTIFYING
+    testCertifyingState();
 }
 
 void testCertifyingState(){
