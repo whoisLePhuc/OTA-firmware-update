@@ -6,19 +6,19 @@
 #include "EventManager/EventManager.h"
 
 static void onPlugin(USBAccessState *state){
-    printf("UNPLUGGED: Nhan PLUGIN. Chuyen sang PLUGGED.\n");
+    printf("UNPLUGGED -> PLUGIN. Change to PLUGGED.\n");
     state->manager->setState(state->manager, pluggedStateCreate());
 }
 
 static void onPlugout(USBAccessState *state){
-    printf("UNPLUGGED: Nhan PLUGOUT. Khong co thay doi.\n");
+    printf("UNPLUGGED -> Nhan PLUGOUT.No change.\n");
 }
 
 static void setContext(USBAccessState *state, struct USBAccessControlManager *manager){
-    currentEvent = EVENT_TYPE_NONE; // Reset event khi chuyển trạng thái
     state->manager = manager;
 }
 
+// Function to create a new instance of the UnPluggedState
 USBAccessState* unpluggedStateCreate(){
     USBAccessState *unpluggedState = (USBAccessState*)malloc(sizeof(USBAccessState));
     unpluggedState->onPlugin = onPlugin;

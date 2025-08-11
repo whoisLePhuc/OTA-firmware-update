@@ -11,11 +11,11 @@ DBusConnection* usbguardInitConnection(void) {
     dbus_error_init(&err);
     conn = dbus_bus_get(DBUS_BUS_SYSTEM, &err);
     if (dbus_error_is_set(&err)) {
-        fprintf(stderr, "Kết nối lỗi: %s\n", err.message);
+        fprintf(stderr, "D-bus connection error: %s\n", err.message);
         dbus_error_free(&err);
     }
     if (!conn) {
-        fprintf(stderr, "Không thể kết nối tới system bus\n");
+        fprintf(stderr, "Can not connect to system bus\n");
         return NULL;
     }
 
@@ -23,7 +23,7 @@ DBusConnection* usbguardInitConnection(void) {
     dbus_bus_add_match(conn, rule, &err);
     dbus_connection_flush(conn);
     if (dbus_error_is_set(&err)) {
-        fprintf(stderr, "Lỗi khi add match: %s\n", err.message);
+        fprintf(stderr, "Error add match: %s\n", err.message);
         dbus_error_free(&err);
         return NULL;
     }
@@ -39,11 +39,11 @@ int usbguardListenEvent(DBusConnection* conn, UsbDeviceInfo* info) {
     msg = dbus_connection_pop_message(conn);
 
     if (msg == NULL) {
-        return 0; // Không có message
+        return 0; // no message available from D-Bus
     }
 
     if (dbus_message_is_signal(msg, "org.usbguard.Devices1", "DevicePresenceChanged")) {
-        // Reset struct trước khi lưu dữ liệu mới
+        // Reset struct before filling it
         memset(info, 0, sizeof(UsbDeviceInfo));
 
         dbus_message_iter_init(msg, &iter);
@@ -60,7 +60,7 @@ int usbguardListenEvent(DBusConnection* conn, UsbDeviceInfo* info) {
         info->device_rule[sizeof(info->device_rule) - 1] = '\0';
         dbus_message_iter_next(&iter);
 
-        // Đọc dictionary a{ss}
+        // Read dictionary a{ss}
         if (dbus_message_iter_get_arg_type(&iter) == DBUS_TYPE_ARRAY) {
             dbus_message_iter_recurse(&iter, &dictIter);
             int count = 0;
@@ -91,6 +91,7 @@ int usbguardListenEvent(DBusConnection* conn, UsbDeviceInfo* info) {
     return 0;
 }
 
+// Function to print USB device information
 void usbguardPrintInfo(const UsbDeviceInfo* info) {
     printf("USB Info:\n");
     printf("ID: %u, Event: %u, Target: %u, Rule: %s\n",
@@ -101,6 +102,7 @@ void usbguardPrintInfo(const UsbDeviceInfo* info) {
     }
 }
 
+// Function to check if the USB device is a storage device
 int usbguardStorageDeviceCheck(const UsbDeviceInfo* info) {
     if (info == NULL || info->property_count == 0) {
         return 0;
@@ -110,25 +112,25 @@ int usbguardStorageDeviceCheck(const UsbDeviceInfo* info) {
         const char* key = info->properties[i].key;
         const char* value = info->properties[i].value;
 
-        // 1. Thiết bị chính có class = "08" (Mass Storage)
+        // 1. if class = "08" (Mass Storage)
         if (strcmp(key, "deviceClass") == 0 && strcmp(value, "08") == 0) {
             return 1;
         }
 
-        // 2. Composite device: một trong các interface có class = "08"
+        // 2. Composite device: if device interface has class = "08"
         if (strncmp(key, "interface.", 10) == 0 &&
             strstr(key, ".class") != NULL &&
             strcmp(value, "08") == 0) {
             return 1;
         }
 
-        // 3. Tên chứa "Storage"
+        // 3. Device name contain "Storage"
         if (strcmp(key, "name") == 0 &&
             strstr(value, "Storage") != NULL) {
             return 1;
         }
 
-        // 4. with-interface = "08:06:50" hoặc bắt đầu bằng "08:"
+        // 4. with-interface = "08:06:50" or start with "08:"
         if (strcmp(key, "with-interface") == 0 &&
             (strcmp(value, "08:06:50") == 0 ||
              strncmp(value, "08:", 3) == 0)) {

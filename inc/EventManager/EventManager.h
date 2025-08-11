@@ -4,22 +4,23 @@
 #include "FiniteStateMachine/USBAccessControlManager.h"
 
 typedef enum {
-    EVENT_TYPE_NONE,
-    EVENT_TYPE_PLUGIN,
-    EVENT_TYPE_PLUGOUT,
-    EVENT_TYPE_ALLOW_ACCESS_STORAGE,
-    EVENT_TYPE_DENY_ACCESS,
-    EVENT_TYPE_CERT_NOT_VERIFY,
-    EVENT_TYPE_CERT_VERIFIED,
-    EVENT_TYPE_MOUNT_SUCCESS,
-    EVENT_TYPE_MOUNT_FAILED,
-    EVENT_TYPE_ALLOW_ACCESS_NON_STORAGE,
-    EVENT_TYPE_CERT_VERIFIED_SUCCESS,
-    EVENT_TYPE_CERT_VERIFIED_FAIL
+    EVT_USB_NO_EVENT,
+    EVT_USB_PLUGIN,
+    EVT_USB_PLUGOUT,
+    EVT_USB_ALLOW_ACCESS_STORAGE,
+    EVT_USB_DENY_ACCESS,
+    EVT_USB_CERT_NOT_VERIFY,
+    EVT_USB_CERT_VERIFIED,
+    EVT_USB_MOUNT_SUCCESS,
+    EVT_USB_MOUNT_FAILED,
+    EVT_USB_ALLOW_ACCESS_NON_STORAGE,
+    EVT_USB_CERT_VERIFIED_SUCCESS,
+    EVT_USB_CERT_VERIFIED_FAIL
 } EventType;
 
-extern EventType currentEvent;   // khai báo biến toàn cục
+extern EventType currentEvent;
 
-void handleEvent(EventType event, USBAccessControlManager *device);
+
+void handleUsbEvent(EventType event, USBAccessControlManager *device);
 
 #endif

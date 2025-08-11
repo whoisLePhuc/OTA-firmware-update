@@ -7,14 +7,17 @@
 
 
 static void onPlugout(USBAccessState *state){
-    printf("DENY: Nhan PLUGOUT. Chuyen sang UNPLUGGED.\n");
+    printf("DENY -> PLUGOUT. Change to UNPLUGGED.\n");
     state->manager->setState(state->manager, unpluggedStateCreate());
 }
 
 static void setContext(USBAccessState *state, struct USBAccessControlManager *manager){
     state->manager = manager;
+
+    // Các hàm được phép thực hiện trong trạng thái DENY
 }
 
+// Function to create a new instance of the DenyState
 USBAccessState* denyStateCreate(){
     USBAccessState *denyState = (USBAccessState*)malloc(sizeof(USBAccessState));
     denyState->onPlugin = NULL;

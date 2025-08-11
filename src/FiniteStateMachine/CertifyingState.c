@@ -6,38 +6,44 @@
 #include "FiniteStateMachine/MountingState.h"
 #include "EventManager/EventManager.h"
 #include "FiniteStateMachine/USBAccessControlManager.h"
-#include "USBAccessControlComponent/UdevListener.h"
+#include "USBAccessControlComponent/CertificateVerifier.h"
 
 static void onPlugin(USBAccessState *state) {
-    printf("CERTIFYING: Nhan PLUGIN. Khong co thay doi.\n");
+    printf("CERTIFYING -> PLUGIN. No change.\n");
 }
 
 static void onPlugout(USBAccessState *state){
-    printf("CERTIFYING: Nhan PLUGOUT. Chuyen sang UNPLUGGED.\n");
+    printf("CERTIFYING -> PLUGOUT. Change to UNPLUGGED.\n");
     state->manager->setState(state->manager, unpluggedStateCreate());
 }
 
 static void onCertNotVerify(USBAccessState *state){
-    printf("CERTIFYING: Nhan CERTIFICATE_NOT_VERIFY. Chuyen sang DENY.\n");
+    printf("CERTIFYING -> CERTIFICATE_NOT_VERIFY. Change to DENY.\n");
     state->manager->setState(state->manager, denyStateCreate());
 }
 
 static void onCertVerified(USBAccessState *state){
-    printf("CERTIFYING: Nhan CERTIFICATE_VERIFIED. Chuyen sang MOUNTING.\n");
+    printf("CERTIFYING -> CERTIFICATE_VERIFIED. Change to MOUNTING.\n");
     state->manager->setState(state->manager, mountingStateCreate());
 }
 
 static void setContext(USBAccessState *state, struct USBAccessControlManager *manager){
     state->manager = manager;
-
-    // Các hàm được thực hiện trong trạng thái CERTIFYING
-    testCertifyingState();
+    certifyingUsbCert();
 }
 
-void testCertifyingState(){
-    currentEvent = EVENT_TYPE_CERT_NOT_VERIFY; // Giả lập sự kiện CERT_VERIFIED
+// Function to verify the USB certificate
+void certifyingUsbCert(){
+    if (certgen_verify_cert_with_ca("input/usb_cert.pem", "cert/ca.crt") == 1) {
+        currentEvent = EVT_USB_CERT_VERIFIED;
+        printf("Certificate is valid and signed by CA.\n");
+    } else {
+        currentEvent = EVT_USB_CERT_NOT_VERIFY;
+        printf("Verification failed: %s\n");
+    }
 }
 
+// Function to create a new instance of the CertifyingState
 USBAccessState* certifyingStateCreate(){
     USBAccessState *certifyingState = (USBAccessState*)malloc(sizeof(USBAccessState));
     certifyingState->onPlugin = onPlugin;

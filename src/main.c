@@ -2,12 +2,12 @@
 #include <unistd.h> 
 #include "FiniteStateMachine/USBAccessControlManager.h"
 #include "FiniteStateMachine/UnPluggedState.h"
-#include "USBAccessControlComponent/UdevListener.h"
 #include "EventManager/EventManager.h"
 #include "USBAccessControlComponent/USBGuardInterface.h"
+#include "USBAccessControlComponent/CertificateVerifier.h"
 
 int main() {
-    // Khởi tạo USBAccessControlManager với trạng thái ban đầu là UnPlugged
+    // Initialize USBAccessControlManager with initial state UnPlugged
     USBAccessControlManager *device = USBAccessControlManagerCreate(unpluggedStateCreate());
     if (!device) {
         fprintf(stderr, "Failed to create USBAccessControlManager\n");
@@ -16,25 +16,22 @@ int main() {
     DBusConnection* conn = usbguardInitConnection();
 
     if (!conn) return 1;
-    printf("Đang lắng nghe USB events...\n");
+    printf("Listening USB events...\n");
 
     while (1) {
         if (usbguardListenEvent(conn, &usbInfo)) {
             usbguardPrintInfo(&usbInfo);
-
             if (usbInfo.event == 1) { 
-                currentEvent = EVENT_TYPE_PLUGIN;
+                currentEvent = EVT_USB_PLUGIN;
             } else if (usbInfo.event == 3) {
-                currentEvent = EVENT_TYPE_PLUGOUT;
+                currentEvent = EVT_USB_PLUGOUT;
             }
-  
-            // Xử lý sự kiện USB
-            
-            // Ở đây có thể gọi các module khác xử lý usbInfo
         }
-        handleEvent(currentEvent, device);
+        handleUsbEvent(currentEvent, device);
         sleep(1); 
     }
     return 0;
 }
+
+
 

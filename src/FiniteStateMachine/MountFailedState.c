@@ -7,12 +7,12 @@
 #include "EventManager/EventManager.h"
 
 static void onPlugout(USBAccessState *state){
-    printf("MOUNT_FAILED: Nhan PLUGOUT. Chuyen sang UNPLUGGED.\n");
+    printf("MOUNT_FAILED -> PLUGOUT. Change to UNPLUGGED.\n");
     state->manager->setState(state->manager, unpluggedStateCreate());
 }
 
 static void onMountSuccess(USBAccessState *state){
-    printf("MOUNT_FAILED: Nhan MOUNT_SUCCESS. Chuyen sang IN_SERVICE.\n");
+    printf("MOUNT_FAILED -> MOUNT_SUCCESS. Change to IN_SERVICE.\n");
     state->manager->setState(state->manager, inServiceStateCreate());
 }
 
@@ -20,6 +20,7 @@ static void setContext(USBAccessState *state, struct USBAccessControlManager *ma
     state->manager = manager;
 }
 
+// Function to create a new instance of the MountFailedState
 USBAccessState* mountFailedStateCreate(){
     USBAccessState *mountFailedState = (USBAccessState*)malloc(sizeof(USBAccessState));
     mountFailedState->onPlugin = NULL;
