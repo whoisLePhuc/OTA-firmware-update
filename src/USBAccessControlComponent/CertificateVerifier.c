@@ -2,6 +2,7 @@
 #include <openssl/pem.h>
 #include <openssl/x509_vfy.h>
 #include <stdio.h>
+#include "USBAccessControlComponent/CertificateVerifier.h"
 
 int certgen_verify_cert_with_ca(const char *cert_path, const char *ca_cert_path) {
     FILE *fp_cert = fopen(cert_path, "r");
