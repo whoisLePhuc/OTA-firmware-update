@@ -6,32 +6,58 @@
 #include "USBAccessControlComponent/USBGuardInterface.h"
 #include "USBAccessControlComponent/CertificateVerifier.h"
 
-int main() {
-    // Initialize USBAccessControlManager with initial state UnPlugged
+int main(){
+    printf("Khoi tao FiniteStateMachine: Trang thai ban dau UNPLUGGED.\n");
     USBAccessControlManager *device = USBAccessControlManagerCreate(unpluggedStateCreate());
-    if (!device) {
-        fprintf(stderr, "Failed to create USBAccessControlManager\n");
-        return 1;
-    }
-    DBusConnection* conn = usbguardInitConnection();
 
-    if (!conn) return 1;
-    printf("Listening USB events...\n");
+    printf("\n--- Test case 1: Happy path ---\n");
+    device->pluginEvent(device);
+    sleep(1);
+    device->allowAccessStorageEvent(device);
+    sleep(1);
+    device->certVerifiedEvent(device);
+    sleep(1);
+    device->mountSuccessEvent(device);
+    sleep(1);
+    device->plugoutEvent(device);
+    sleep(1);
 
-    while (1) {
-        if (usbguardListenEvent(conn, &usbInfo)) {
-            usbguardPrintInfo(&usbInfo);
-            if (usbInfo.event == 1) { 
-                currentEvent = EVT_USB_PLUGIN;
-            } else if (usbInfo.event == 3) {
-                currentEvent = EVT_USB_PLUGOUT;
-            }
-        }
-        handleUsbEvent(currentEvent, device);
-        sleep(1); 
-    }
+    printf("\n--- Test case 2: Certificate failed ---\n");
+    device->pluginEvent(device);
+    sleep(1);
+    device->allowAccessStorageEvent(device);
+    sleep(1);
+    device->certNotVerifyEvent(device);
+    sleep(1);
+    device->plugoutEvent(device);
+    sleep(1);
+
+    printf("\n--- Test case 3: Mounting failed ---\n");
+    device->pluginEvent(device);
+    sleep(1);
+    device->allowAccessStorageEvent(device);
+    sleep(1);
+    device->certVerifiedEvent(device);
+    sleep(1);
+    device->mountFailedEvent(device);
+    sleep(1);
+    device->plugoutEvent(device);
+    sleep(1);
+
+    printf("\n--- Test case 4: Plugout during mounting ---\n");
+    device->pluginEvent(device);
+    sleep(1);
+    device->allowAccessStorageEvent(device);
+    sleep(1);
+    device->certVerifiedEvent(device);
+    sleep(1);
+    device->plugoutEvent(device);
+    sleep(1);
+
+    USBAccessControlManagerDestroy(device);
+    printf("\nChuong trinh ket thuc.\n");
+
     return 0;
 }
-
 
 

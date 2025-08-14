@@ -6,7 +6,6 @@
 #include "FiniteStateMachine/DenyState.h"
 #include "FiniteStateMachine/USBAccessControlManager.h"
 #include "FiniteStateMachine/MountingState.h"
-#include "USBAccessControlComponent/AccessControlListVerifier.h"
 #include "USBAccessControlComponent/USBGuardInterface.h"
 #include "EventManager/EventManager.h"
 

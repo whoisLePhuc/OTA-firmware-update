@@ -3,8 +3,6 @@
 #include "inc/FiniteStateMachine/USBAccessControlManager.h"
 #include "inc/FiniteStateMachine/UnPluggedState.h"
 
-
-
 int main(){
     printf("Khoi tao FiniteStateMachine: Trang thai ban dau UNPLUGGED.\n");
     USBAccessControlManager *device = USBAccessControlManagerCreate(unpluggedStateCreate());
